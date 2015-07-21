@@ -1,0 +1,46 @@
+# Base image
+FROM ubuntu:14.04
+MAINTAINER PROKARMA
+
+#Phase 0
+RUN apt-get update
+RUN apt-get install wget -y
+RUN apt-get install unzip
+RUN apt-get install -y x11vnc xvfb firefox
+RUN wget ftp://ftp.mozilla.org/pub/mozilla.org/firefox/releases/29.0/linux-x86_64/en-US/firefox-29.0.tar.bz2
+RUN tar -xjvf firefox-29.0.tar.bz2
+RUN mv firefox /opt/firefox29
+RUN ln -sf /opt/firefox29/firefox /usr/bin/firefox
+
+WORKDIR /usr/
+
+# Phase 1
+#Installing nodejs
+RUN sudo apt-get update
+RUN sudo apt-get install -y nodejs
+#Installing npm
+RUN sudo apt-get install -y npm
+#Installing Java
+RUN sudo apt-get install -y openjdk-7-jdk
+#Installing git
+RUN sudo apt-get install -y git
+#Installing bower-package manager
+RUN npm install -g bower
+RUN ln -s /usr/bin/nodejs /usr/bin/node
+#Installing grunt client
+RUN sudo npm install -g grunt-cli
+
+#Phase 2
+#Downloading Angular Application
+RUN wget https://github.com/prokarma2014/AngularApplication/archive/master.zip
+RUN unzip master.zip
+WORKDIR /usr/AngularApplication-master/pocZip
+RUN npm install
+RUN sudo bower install -y --allow-root
+ADD run.sh /run.sh
+RUN chmod +x /*.sh
+RUN mv /run.sh /usr/AngularApplication-master/pocZip/
+
+#run.sh
+#grunt serve &
+#grunt test:e2e
